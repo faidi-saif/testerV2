@@ -1,0 +1,34 @@
+{
+    "description": "take photo with : 5K_EAC_30_W_HEVC_IMX577 mode ",
+    "steps":
+    [
+      {
+        "step": "reset",
+        "params":
+        {
+          "option"  :  "soft"
+        }
+
+      },
+
+      {
+        "step": "take_photo",
+        "params":
+        {
+            "fps" : "30",
+            "res" : "5K",
+            "stitch_mode" : "EAC",
+            "liveview"    : "off"
+        }
+      },
+
+      {
+        "step": "get_result",
+        "params":
+
+        {
+          "out_directory"  : "~/photo_logs"
+        }
+      }
+    ]
+}

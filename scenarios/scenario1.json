@@ -1,0 +1,46 @@
+{
+    "description": "take photo --> 5K_EAC_30_W_HEVC_IMX577 mode",
+    "steps":
+    [
+      {
+        "case": "reset",
+        "params":
+        {
+          "option"  :"soft"
+        },
+        "logs"       : "~/Desktop/test_logs/reset"
+      },
+
+      {
+        "case": "take_photo",
+        "params":
+        {
+            "fps" : "30",
+            "res" : "5K",
+            "stitch_mode" : "EAC",
+            "liveview"    : "off",
+            "stub" : "disable",
+            "lrv" : "",
+            "flare_fake" : "disable",
+            "flare_id_front_corr" : "50",
+            "flare_fake_time" : "0",
+            "ring_use_high_res" : "enable",
+            "encoder" : "HEVC",
+            "sensor" : "IMX577",
+            "verbose" : "off"
+        },
+        "logs" : "~/Desktop/test_logs/still"
+      },
+
+      {
+        "case": "checker",
+        "params":
+
+        {
+          "out_directory"  : "~/Desktop/test_logs/still/photos",
+          "TypeChecker"        : "FileNotNull"
+        }
+      }
+    ]
+}
+
