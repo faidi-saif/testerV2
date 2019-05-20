@@ -181,13 +181,16 @@ class Camera :
         :param arg_frw_type: firmware type must be spherical , Jbay , jbay not implemented yet
         :return:
         '''
-        assert(arg_mode == 'arduino' or arg_mode == 'make'), 'invalid flash option , choose "arduino or "make" to set flash option'
+        assert(arg_mode == 'arduino' or arg_mode == 'make' and arg_frw_type =='spherical'), 'invalid flash option , choose "arduino or "make" to set flash option'
         if arg_mode   == "arduino":
             self.netwk_manager.arduino_ser.fw_flash()
         elif arg_mode =="make":
-            if arg_frw_type == "spherical":
-                os.environ['VARIANT'] = 'spherical'
-            #os.system("../../test.sh")
+            cam_ip = str(self.host_ip)
+            binary_file = '../../../../waf_build/{}/build/eaglepeak/sd_fwupdate/DATA.bin'.format(arg_frw_type)
+            os.environ['VARIANT'] = 'arg_frw_type'
+            #print('../../../../admin/host_tools/gen/remote_flash.sh {} {}'.format(cam_ip,binary_file))
+            os.system('../../../../admin/host_tools/gen/remote_flash.sh {} {}'.format(cam_ip,binary_file))
+            #/waf_build/spherical/build/eaglepeak/sd_fwupdate/DATA.bin
         else:
             pass
 

@@ -177,6 +177,10 @@ class Vcamera :
         '''
         return self.camera.get_data()
 
+    # ---------------------------------------------- ------------------------------------------
+    def flash(self,arg_mode,arg_frw_type):
+        self.camera.flash(arg_mode,arg_frw_type)
+
 
 
 
