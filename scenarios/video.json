@@ -1,0 +1,39 @@
+{
+    "description": "record video  --> 5K_EAC_30_W_HEVC_IMX577 mode",
+    "steps":
+    [
+
+
+      {
+        "case": "record_video",
+        "params":
+        {
+            "fps"                     : "30",
+            "res"                     : "5K",
+            "stitch_mode"             : "EAC",
+            "liveview"                : "off",
+            "stub"                    : "disable",
+            "lrv"                     : "",
+            "flare"                   : "2",
+            "flare_fake"              : "disable",
+            "flare_id_front_corr"     : "50",
+            "flare_fake_time"         : "0",
+            "ring_use_high_res"       : "enable",
+            "encoder"                 : "HEVC",
+            "sensor"                  : "IMX577",
+            "verbose"                 : "off",
+            "calib"                   : "DUAL_CAL",
+            "pano"                    : "PANO",
+            "mpx"                     : "12MP",
+            "dump"                    : "enable",
+            "nbits"                   : "16",
+            "bayer_width"             : "4056",
+            "run_time"                : "6"
+
+        },
+        "logs" : "~/Desktop/test_logs/still"
+      }
+
+    ]
+}
+
