@@ -25,10 +25,7 @@ class Grid :
     @property
     def target_ip(self):
         return self._target_ip
-    
-    @property
-    def target_ip(self):
-        return self._target_ip
+
 
     @property
     def host_http_path(self):
@@ -41,9 +38,6 @@ class Grid :
     #----------------------------------------------- setters -----------------------------------------
 
 
-    @target_ip.setter
-    def target_ip(self,arg_target_ip):
-        self._target_ip    = arg_target_ip
 
 
     @host_ip.setter

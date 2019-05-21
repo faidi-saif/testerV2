@@ -10,7 +10,7 @@ class Vcamera :
         :param Camera: hardware camera , low level access
         '''
 
-        self.camera = Camera
+        self.camera             = Camera
         self.test_env           = TestEnvironment()
         self.mind               = CameraMind(self)
         self.mode               = None
@@ -35,6 +35,8 @@ class Vcamera :
         params = {'fps': '25', 'res': '5.6K', 'flare': '1000'}
         :return: None
         '''
+        self.set_test_mode(arg_mode)
+        self.mind.record_video()
         pass
 
     # ---------------------------------------------- ------------------------------------------
@@ -180,6 +182,9 @@ class Vcamera :
     # ---------------------------------------------- ------------------------------------------
     def flash(self,arg_mode,arg_frw_type):
         self.camera.flash(arg_mode,arg_frw_type)
+
+    def cleanup(self,):
+        self.mind.cleanup()
 
 
 

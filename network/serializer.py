@@ -24,7 +24,7 @@ class Serializer:
     # ---------------------------------------- sed data via serial port -----------------------------------------
 
     def send_data(self,arg_data):
-        #time.sleep(0.1)
+        time.sleep(0.2)
         l_data = self.encode_data(arg_data + '\r\n')
         self.ser.flushInput()
         self.ser.flushOutput()

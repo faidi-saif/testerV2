@@ -1,5 +1,4 @@
 from network.networkManager import NetworkManager
-from interfaceExplorer import InterfaceExplorer
 import os
 import time
 
@@ -30,7 +29,7 @@ class Camera :
         self.grid               = grid
         self.grid.target_ip     = self.host_ip # target ip for the grid is the host ip for the camera
         self.netwk_manager      = NetworkManager(username =self.username ,host = self.host_ip,ssh_passwd = self.ssh_passwd,arduino_port=self.arduino_port,linux_port=self.linux_port,rtos_port=self.rtos_port)
-        self.interface_explorer = InterfaceExplorer()
+
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -66,6 +65,7 @@ class Camera :
             serial_flag = self.serial_status()
             if time_elapsed >= arg_timeout:
                 raise Exception(' serial port is not ready , timeout ')
+                #return False
         print('serial port is available')
         return True
 
@@ -79,7 +79,7 @@ class Camera :
         '''
         time_elapsed = 0
         reset_flag = False
-        while self.interface_explorer.find_by_ip(self.grid.host_ip) == False:
+        while self.netwk_manager.interface_explorer.find_by_ip(self.grid.host_ip) == False:
             time.sleep(0.1)
             print('waiting for network connection')
             time_elapsed = time_elapsed + 0.1
@@ -89,6 +89,7 @@ class Camera :
                 self.soft_reset()
             if time_elapsed >= arg_timeout:
                 raise Exception('ssh is not ready , timeout ')
+                #return False
         print('Connection established to ---> {}'.format(self.grid.host_ip))
         return True
 
@@ -103,8 +104,6 @@ class Camera :
         :return: None
         '''
         is_ready_flag = True
-        ssh_flag      = False
-        rtos_flag     = False
         for el in arg_interface :
             assert (el == 'ssh' or el =='serial') ,' print invalid choice for interface choose "ssh" or "serial"'
             if el == 'ssh':
@@ -181,7 +180,7 @@ class Camera :
         :param arg_frw_type: firmware type must be spherical , Jbay , jbay not implemented yet
         :return:
         '''
-        assert(arg_mode == 'arduino' or arg_mode == 'make' and arg_frw_type =='spherical'), 'invalid flash option , choose "arduino or "make" to set flash option'
+        assert((arg_mode == 'arduino' or arg_mode == 'make') and arg_frw_type =='spherical'), 'invalid flash option , choose "arduino or "make" to set flash option'
         if arg_mode   == "arduino":
             self.netwk_manager.arduino_ser.fw_flash()
         elif arg_mode =="make":
@@ -196,8 +195,6 @@ class Camera :
 
 
 
-
-
     def refresh(self):
         '''
         this function refresh the instances of the network components of the camera
@@ -205,8 +202,6 @@ class Camera :
         :return: None
         '''
         self.netwk_manager.refresh()
-
-
 
 
 

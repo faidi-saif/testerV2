@@ -2,26 +2,35 @@ from network.arduinoSerializer import ArduinoSerializer
 from network.sshAgent import SshAgent
 from network.serializerWithReader import SerializerWithReader
 from network.webServerAgent import WebServerAgent
+from network.interfaceExplorer import InterfaceExplorer
 import os
 
 class NetworkManager :
 
     def __init__(self,username,host,ssh_passwd,arduino_port,linux_port,rtos_port):
-        self.arduino_ser = ArduinoSerializer(arduino_port,9600)
-        self.rtos_ser    = SerializerWithReader(rtos_port,115200,"RTOS")
-        self.linux_ser   = SerializerWithReader(linux_port, 115200,"LINUX")
-        self.ssh_agent   = SshAgent(arg_username = username,arg_host = host,arg_passwd = ssh_passwd)
-        self.wb_server   = WebServerAgent()
+        self.arduino_port       = arduino_port
+        self.linux_port         = linux_port
+        self.rtos_port          = rtos_port
+        self.arduino_ser        = ArduinoSerializer(arduino_port,9600)
+        self.rtos_ser           = SerializerWithReader(rtos_port,115200,"RTOS")
+        self.linux_ser          = SerializerWithReader(linux_port, 115200,"LINUX")
+        self.ssh_agent          = SshAgent(arg_username = username,arg_host = host,arg_passwd = ssh_passwd)
+        self.wb_server          = WebServerAgent()
+        self.interface_explorer = InterfaceExplorer()
 
+    # ---------------------------------------------- ------------------------------------------
     def refresh(self):
-        self.__init__()
+        self.arduino_ser = ArduinoSerializer(self.arduino_port , 9600)
+        self.rtos_ser = SerializerWithReader(self.linux_port , 115200, "RTOS")
+        self.linux_ser = SerializerWithReader(self.linux_port, 115200, "LINUX")
 
-
+    # ---------------------------------------------- ------------------------------------------
     def __del__(self):
         self.arduino_ser.__del__()
         self.rtos_ser.__del__()
         self.linux_ser.__del__()
 
+    # ---------------------------------------------- ------------------------------------------
     def fix_web_path(self,arg_path):
         path = arg_path
         if (arg_path.find('/tmp/fuse_d') != -1):

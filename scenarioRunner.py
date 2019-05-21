@@ -2,6 +2,7 @@ import json
 import os
 from logger import Logger
 from marshmallow import Schema, fields, pprint, ValidationError
+# pip3 install -U marshmallow --pre
 import  check.checker as checker
 
 
@@ -97,7 +98,7 @@ class ScenarioRunner :
                 self.vcamera.reset(soft_hard)
                 self.vcamera.stop_acquisition()
                 data = self.vcamera.get_data()
-                log_path = self.logger.create_dir(self.check_format(arg_step['logs']))
+                log_path = str(self.logger.create_dir(self.check_format(arg_step['logs'])))
                 rtos_path = log_path + '/rtos.txt'
                 linux_path = log_path + '/linux.txt'
                 self.logger.write(rtos_path, data[0])
@@ -135,9 +136,8 @@ class ScenarioRunner :
 
     # ---------------------------------------------- ------------------------------------------
     def run_pre_scenario(self):
-        self.vcamera.is_ready('serial','ssh',arg_timeout=30)
-        self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/')
-        self.vcamera.reset('soft') # before starting the scenario , make a reset
+        self.vcamera.cleanup()
+
 
     # ---------------------------------------------- ------------------------------------------
     def run_post_scenario(self):
@@ -157,11 +157,13 @@ class ScenarioRunner :
            test cases
         6- run post scenario actions
         '''
+        #self.run_pre_scenario()
+
         scenario = self.load_json(arg_scenario_file)
         self.description = scenario['description']
         self.steps       = scenario['steps']
         print("[--------------------------------------------- start running sceanrio : {} --------------------------------]".format(self.description))
-        self.run_pre_scenario()
+
         for step in self.steps :
             print(" case --------------------------------> " + step['case'])
             result = self.run(step)
@@ -169,6 +171,7 @@ class ScenarioRunner :
                 final_result = result and self.vcamera.camera.is_serial_ready(arg_timeout=10) # final result = camera alive and test ok
                 ret_value = {self.description : final_result}
                 self.results.append(ret_value)
+
         self.run_post_scenario()
 
 

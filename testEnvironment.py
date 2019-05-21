@@ -17,16 +17,22 @@ class TestEnvironment:
         self._flare_fake            = 'disable'
         self._download_target_dir   = os.environ['HOME'] + '/Desktop/test_capt'
         self._lrv                   = ''
-        self._stub                  = 'disable'
+        self._stub                  = 'enable'
         self._verbose               = 'off'
         self._run_time              = '5'
         self._fps                   = '30'
         self._res                   = '5K'
-        self._flare                 = '0'
+        self._flare                 = '0'                           # '0','1','2'
         self._liveview              = 'on'
         self._stitch_mode           = 'EAC'
         self._sensor                = 'IMX577'
         self._encoder               = 'HEVC'
+        self._calib                 = ''                            # '' , 'DUAL_CAL'
+        self._pano                  = ''                            # '' , 'PANO'    ...
+        self._mpx                   = '12MP'                        # '12MP' , '18MP' ...
+        self._nbits                 =''                             # '16'
+        self._bayer_width           =''                             # '4056'
+        self._dump                  ='disable'                      #'enable, 'disable'
 
 
     #----------------------------------------------- getters -------------------------------------------------
@@ -95,6 +101,30 @@ class TestEnvironment:
     def stitch_mode(self):
         return self._stitch_mode
 
+    @property
+    def calib(self):
+        return self._calib
+
+    @property
+    def pano(self):
+        return self._pano
+
+    @property
+    def mpx(self):
+        return self._mpx
+
+    @property
+    def dump(self):
+        return self._dump
+
+    @property
+    def nbits(self):
+        return self._nbits
+
+    @property
+    def bayer_width(self):
+        return self._bayer_width
+
 
     @property
     def env(self):
@@ -114,12 +144,20 @@ class TestEnvironment:
             'flare_fake_time'       : self.flare_fake_time,
             'ring_use_high_res'     : self.ring_use_high_res,
             'encoder'               : self.encoder,
-            'sensor'                : self.sensor
+            'sensor'                : self.sensor,
+            'calib'                 : self.calib,
+            'pano'                  : self.pano,
+            'mpx'                   : self.mpx,
+            'dump'                  : self.dump,
+            'nbits'                 : self.nbits,
+            'bayer_width'           : self.bayer_width
              }
         return  self.environment
 
 
+
     #----------------------------------------------- setters -----------------------------------------------------
+    # using getters and setters is for asserts to check for inputs before generating the scenario
 
     @ring_use_high_res.setter
     def ring_use_high_res(self,arg_ring_use_high_res):
@@ -210,6 +248,37 @@ class TestEnvironment:
         assert (type(arg_sensor) is str), "{} must be of type str ".format(arg_sensor)
         self._sensor = arg_sensor
 
+    @calib.setter
+    def calib(self, arg_calib):
+        assert (type(arg_calib) is str), "{} must be of type str ".format(arg_calib)
+        self._calib = arg_calib
+
+    @pano.setter
+    def pano(self, arg_pano):
+        assert (type(arg_pano) is str), "{} must be of type str ".format(arg_pano)
+        self._pano = arg_pano
+
+
+    @mpx.setter
+    def mpx(self, arg_mpx):
+        assert (type(arg_mpx) is str), "{} must be of type str ".format(arg_mpx)
+        self._mpx = arg_mpx
+
+    @dump.setter
+    def dump(self,arg_dump):
+        assert (type(arg_dump) is str), "{} must be of type str ".format(arg_dump)
+        self._dump = arg_dump
+
+    @nbits.setter
+    def nbits(self,arg_nbits):
+        assert (type(arg_nbits) is str), "{} must be of type str ".format(arg_nbits)
+        self._nbits = arg_nbits
+
+    @bayer_width.setter
+    def bayer_width(self,arg_bayer_width):
+        assert (type(arg_bayer_width) is str), "{} must be of type str ".format(arg_bayer_width)
+        self._bayer_width = arg_bayer_width
+
 
 
     def get_environment(self):
@@ -218,10 +287,12 @@ class TestEnvironment:
 
     def set_environment(self,arg_dict):
         '''
-        remove any space ( at the begining and at the end of the test env varaible , example ' fps ' -->'fps'
-        :param arg_dict: dictionnary of the envirement test varaibles to set
+         1- reset all te variables before setting new configuration
+         2- remove any space ( at the beginning and at the end of the test env variable , example ' fps ' -->'fps'
+        :param arg_dict: dictionary of the environment test variables  to set
         :return: None
         '''
+        self.__init__()
         for key,value in arg_dict.items():
             key = key.strip()
             if key in self.env:
@@ -255,6 +326,18 @@ class TestEnvironment:
                     self.flare_id_front_corr    = value
                 elif key          == 'flare_fake_time':
                     self.flare_fake_time        = value
+                elif key          == 'calib' :
+                    self.calib                  = value
+                elif key          == 'pano':
+                    self.pano                   = value
+                elif key          == 'mpx' :
+                    self.mpx                    = value
+                elif key          == 'dump':
+                    self.dump                   = value
+                elif key          == 'nbits':
+                    self.nbits                  = value
+                elif key          == 'bayer_width':
+                    self.bayer_width            = value
             else :
                 print(key ,'is not a test environment variable')
 
