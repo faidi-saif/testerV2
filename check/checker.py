@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-
+from vcamera import Vcamera
 
 # ----------------------------------------------base class checker ------------------------------------------
 class Checker (ABC):
@@ -23,9 +23,10 @@ class Checker (ABC):
 class FileNotNull(Checker):
 
 
-    def check(self, args):
+    def check(self, *args):
         resul = True
-        path = args
+        path =args[0]
+        print(path)
         assert (path is not None) , " No directory for check passed "
         files = os.listdir(path)
         for file in files :
@@ -41,9 +42,24 @@ class FileNotNull(Checker):
         return self._result
 
 
+class FrwVersion(Checker):
+
+    def check(self,*args ):
+        cam = args[0]
+        if cam.is_ready('serial','ssh', arg_timeout=40) :
+            result = cam.get_frw_version()
+            if result != '':
+                return True
+            else:
+                return False
+        else :
+            return False
 
 
 
 
-# c = FileNotNull()
+
+
+
+        # c = FileNotNull()
 # print(c.check('/home/saif/Desktop/photo_logs'))
