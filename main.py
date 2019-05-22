@@ -10,17 +10,18 @@ grid= Grid(arg_host_ip = "192.168.0.1",arg_host_http_path = '/var/www/html')
 hard_cam  = Camera(username = 'root',host_ip = '192.168.0.202',ssh_passwd = '',web_port = 8042,arduino_port = '/dev/ARDUINO',linux_port = '/dev/LINUX',rtos_port = '/dev/RTOS',grid = grid)
 
 
-vcam = Vcamera(hard_cam)
+vcam = Vcamera(hard_cam,'spherical')
 
+#vcam.get_results('/home/saif/Desktop/test_capt')
 
 
 sce_runner = ScenarioRunner(vcam)
+#
+sce_runner.run_scenario('./scenarios/flash.json')
+#
+print('final results :' ,sce_runner.results)
 
-#sce_runner.run_scenario('./scenarios/scenario1.json')
 
-sce_runner.run_scenario('./scenarios/video.json')
-
-#print(sce_runner.results)
 
 
 

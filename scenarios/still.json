@@ -21,15 +21,24 @@
             "encoder"                 : "HEVC",
             "sensor"                  : "IMX577",
             "verbose"                 : "off",
-            "calib"                   : "DUAL_CAL",
-            "pano"                    : "PANO",
+            "calib"                   : "",
+            "pano"                    : "",
             "mpx"                     : "12MP",
             "dump"                    : "disable",
             "nbits"                   : "16",
             "bayer_width"             : "4056"
 
         },
-        "logs" : "~/Desktop/test_logs/still"
+        "logs" : "~/Desktop/test_logs/still/serials"
+      },
+
+      {
+        "case": "checker",
+        "params":
+        {
+          "out_directory"  : "~/Desktop/test_logs/still",
+          "TypeChecker"    : "FileNotNull"
+        }
       }
 
     ]

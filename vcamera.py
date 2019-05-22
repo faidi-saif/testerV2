@@ -4,13 +4,14 @@ from testEnvironment import TestEnvironment
 
 class Vcamera :
 
-    def __init__(self,Camera):
+    def __init__(self,camera,frw_type):
         '''
          mode : can be still or video
         :param Camera: hardware camera , low level access
         '''
-
-        self.camera             = Camera
+        assert (frw_type == 'spherical'),'invalid firmware type for camera'
+        self.frw_type           = frw_type
+        self.camera             = camera
         self.test_env           = TestEnvironment()
         self.mind               = CameraMind(self)
         self.mode               = None
@@ -73,7 +74,7 @@ class Vcamera :
         :return: names of the files in the arg_path
         '''
         files = self.camera.netwk_manager.ssh_agent.execute_command('ls ' + arg_path)
-        print(files)
+        print('files :  ',files)
         return files
 
 

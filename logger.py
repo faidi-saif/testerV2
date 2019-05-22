@@ -40,9 +40,10 @@ class Logger:
 
     def create_dir(self,arg_path):
         if os.path.isdir(arg_path):
-            return arg_path
+            pass
         else:
             os.makedirs(arg_path)
+        return arg_path
 
     # -------------------------------------------copy files in a given path (clean before ) -----------------------
     def copy_files(self,from_path, to_path):

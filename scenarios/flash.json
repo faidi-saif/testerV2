@@ -1,0 +1,24 @@
+{
+    "description": "flash with new software ",
+    "steps":
+    [
+      {
+        "case": "flash",
+        "params":
+        {
+          "frw_type":"spherical",
+          "mode"    :"make"
+        }
+      },
+
+      {
+        "case": "checker",
+        "params":
+
+        {
+          "TypeChecker"    : "FrwVersion"
+        }
+      }
+    ]
+}
+

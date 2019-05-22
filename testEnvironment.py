@@ -30,8 +30,8 @@ class TestEnvironment:
         self._calib                 = ''                            # '' , 'DUAL_CAL'
         self._pano                  = ''                            # '' , 'PANO'    ...
         self._mpx                   = '12MP'                        # '12MP' , '18MP' ...
-        self._nbits                 =''                             # '16'
-        self._bayer_width           =''                             # '4056'
+        self._nbits                 = ''                             # '16'
+        self._bayer_width           = ''                             # '4056'
         self._dump                  ='disable'                      #'enable, 'disable'
 
 

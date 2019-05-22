@@ -156,28 +156,14 @@ class CameraMind :
         :return: None
         '''
         for cmd in arg_cmd_list :
-            print(cmd)
-            #time.sleep(0.3)  # time given to each command to be sent on serial port  , test with 0.1s fails
-            #self.execute(cmd)
+            #print(cmd)
+            time.sleep(0.3)  # time given to each command to be sent on serial port  , test with 0.1s fails
+            self.execute(cmd)
 
 
 
 
 
-# ---------------------------------------------- ------------------------------------------
-    def get_results(self,arg_result_path):
-        '''
-        1 - list all the files in the tmp/fuse_d/DCIM/100GOPRO/
-        2 - deactivate the logs
-        3 - save all the files in the directory  arg_result_path
-        4 - clean the directory /tmp/fuse_d/DCIM/100GOPRO/ on the camera
-        :param arg_result_path: path where to save the video or photo tested
-        :return:
-        '''
-        self.vcamera.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
-        self.vcamera.camera.tcmd('t dbg off')
-        self.vcamera.get_files('/tmp/fuse_d/DCIM/100GOPRO/',arg_result_path)
-        self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/*')
 
 
 # ---------------------------------------------- ------------------------------------------
@@ -273,6 +259,12 @@ class CameraMind :
             scenario[len(scenario):len(scenario)] = el_sc
         return scenario
 
+    # ---------------------------------------------- ------------------------------------------
+    def cleanup(self):
+        self.vcamera.camera.soft_reset()
+        self.vcamera.is_ready('ssh', arg_timeout=80)
+        self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/*')
+        self.vcamera.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
 
     # ---------------------------------------------- ------------------------------------------
     def take_photo(self):
@@ -296,12 +288,25 @@ class CameraMind :
                                          video,self.get_cmds('post_video'))
         self.run_scenario(scenario)
 
-
     # ---------------------------------------------- ------------------------------------------
-    def cleanup(self):
-        #self.vcamera.camera.soft_reset()
-        self.vcamera.is_ready('ssh','serial',arg_timeout=30)
+    def get_results(self,arg_result_path):
+        '''
+        1 - list all the files in the tmp/fuse_d/DCIM/100GOPRO/
+        2 - deactivate the logs
+        3 - save all the files in the directory  arg_result_path
+        4 - clean the directory /tmp/fuse_d/DCIM/100GOPRO/ on the camera
+        :param arg_result_path: path where to save the video or photo tested
+        :return:
+        '''
+        self.vcamera.is_ready('ssh','serial',arg_timeout=40)
+        self.vcamera.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
+        self.vcamera.camera.tcmd('t dbg off')
+        self.vcamera.get_files('/tmp/fuse_d/DCIM/100GOPRO/',arg_result_path)
         self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/*')
+
+
+
+
 
 
 

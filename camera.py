@@ -38,13 +38,13 @@ class Camera :
         check if serial port return any information
         :return:
         '''
-        self.start_acquisition()
+        self.netwk_manager.rtos_ser.start_acquisition()
         self.tcmd('t dbg on')
         time.sleep(0.2)
-        self.stop_acquisition()
-        data = self.get_data()
+        self.netwk_manager.rtos_ser.stop_acquisition()
+        data = self.netwk_manager.rtos_ser.get_data()
         # print(data[1])
-        if data[1] == '':
+        if data == '':
             return False
         else:
             return True
@@ -58,11 +58,16 @@ class Camera :
                  False if serial is not available after timeout
         '''
         time_elapsed = 0
+        reset_flag = False
         serial_flag = self.serial_status()
         while serial_flag == False:
             time_elapsed = time_elapsed + 0.3  # time in the sleep of the serial_status
             print("still checking for serial port")
             serial_flag = self.serial_status()
+            if time_elapsed >= arg_timeout / 2 and reset_flag == False:
+                print(" reset camera ---- > look serial ports")
+                reset_flag = True
+                self.soft_reset()
             if time_elapsed >= arg_timeout:
                 raise Exception(' serial port is not ready , timeout ')
                 #return False
@@ -90,7 +95,7 @@ class Camera :
             if time_elapsed >= arg_timeout:
                 raise Exception('ssh is not ready , timeout ')
                 #return False
-        print('Connection established to ---> {}'.format(self.grid.host_ip))
+        print('Connection established to ---> {}'.format(self.grid.host_ip),'time elapsed :',time_elapsed)
         return True
 
     # ---------------------------------------------- ------------------------------------------
@@ -195,6 +200,7 @@ class Camera :
 
 
 
+
     def refresh(self):
         '''
         this function refresh the instances of the network components of the camera
@@ -220,6 +226,7 @@ class Camera :
         :return: None
         '''
         self.netwk_manager.arduino_ser.reset()
+        self.is_ready('serial',arg_timeout=90)
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -231,6 +238,7 @@ class Camera :
         '''
         self.netwk_manager.arduino_ser.reboot()
         self.soft_reset()
+        self.is_ready('serial', arg_timeout=90)
 
 
 
