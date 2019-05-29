@@ -9,7 +9,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 
-parser.add_argument('-s' , help = 'the name of the scenario' , type = str)
+parser.add_argument('-s' , help = 'the name of the scenario , exemple : python3 main.py -s C0,S0' , type = str)
 
 
 
@@ -24,9 +24,11 @@ sce_runner = ScenarioRunner(vcam)
 
 args = parser.parse_args()
 
+#sce_runner.before_test()
+
 scenarios  = args.s.split(',')
 
 for sc in scenarios:
-    #print('./scenarios/{}.{}'.format(sc,'json'))
+
     sce_runner.run_scenario('./scenarios/{}.{}'.format(sc,'json'))
 

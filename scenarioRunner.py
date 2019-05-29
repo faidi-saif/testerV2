@@ -181,7 +181,8 @@ class ScenarioRunner :
             pass
 
 
-
+    def before_test(self):
+        self.vcamera.cleanup()
 
     # ---------------------------------------------- ------------------------------------------
     def run_pre_scenario(self):
@@ -189,7 +190,8 @@ class ScenarioRunner :
         performed before each scenario
         :return:
         '''
-        self.vcamera.cleanup()
+        pass
+
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -214,7 +216,7 @@ class ScenarioRunner :
            test cases
         6- run post scenario actions
         '''
-        self.run_pre_scenario()
+        #self.run_pre_scenario()
 
         scenario = self.load_json(arg_scenario_file)
         self.description = scenario['description']
