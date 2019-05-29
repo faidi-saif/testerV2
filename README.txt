@@ -23,7 +23,7 @@ to setup the tester follow these instructions :
 		As the name indicates one builds the application and the other installs it.
 		To build the application run: 'sudo ./build.sh '
 		Finally install the hidapi shared libraries and the ykushcmd command by running the following script:
-		'Z sudo ./install.sh' 
+		'sudo ./install.sh' 
 
 	* in '/etc/sudoers' add the following line : 'username  ALL=(ALL) NOPASSWD:/usr/bin/ykushcmd' with the appropriate username
 
