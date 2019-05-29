@@ -28,7 +28,7 @@ class SerializerWithReader(Serializer):
             if len_data != 0:
                 data = self.ser.read(len_data)
                 self.coded_data.append(data)
-                time.sleep(0.01)
+            time.sleep(0.01)
 
     # --------------------------------------------------- start_acquisition --------------------------------------------------------
 
@@ -42,7 +42,10 @@ class SerializerWithReader(Serializer):
     def get_data(self):
         self.m_data = ""
         for line in self.coded_data:
-             self.m_data = self.m_data + line.decode('utf-8')
+            try:
+                self.m_data = self.m_data + line.decode('utf-8')
+            except UnicodeDecodeError  :
+                print("data available but exception detected  : 'utf-8' codec can't decode byte 0xf8 in position 0: invalid start byte")
         return self.m_data
 
     # --------------------------------------------------- clean buffer --------------------------------------------------------
@@ -60,4 +63,10 @@ class SerializerWithReader(Serializer):
     def __del__(self):
         super().__del__()
 
+# ser = SerializerWithReader('/dev/RTOS',115200,'rtos')
+# ser.start_acquisition()
+# ser.send_data('t dbg on')
+# time.sleep(0.01)
+# ser.stop_acquisition()
+# print(ser.get_data())
 

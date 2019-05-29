@@ -1,5 +1,5 @@
 from cameraMind import CameraMind
-from testEnvironment import TestEnvironment
+
 
 
 class Vcamera :
@@ -12,9 +12,9 @@ class Vcamera :
         assert (frw_type == 'spherical'),'invalid firmware type for camera'
         self.frw_type           = frw_type
         self.camera             = camera
-        self.test_env           = TestEnvironment()
         self.mind               = CameraMind(self)
         self.mode               = None
+
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -25,10 +25,11 @@ class Vcamera :
         params = {'fps': '25', 'res': '5.6K', 'flare': '1000'}
         :return: None
         '''
-        self.set_test_mode(arg_mode)
-        self.mind.take_photo()
+        #self.mind.conf.mode = 'still'
+        self.set_camera_conf(arg_mode)
+        self.mind.run('still')
 
-
+    # ---------------------------------------------- ------------------------------------------
     def record_video(self,arg_mode):
         '''
        :param arg_mode: a dictionary of the different params of the video
@@ -36,9 +37,17 @@ class Vcamera :
         params = {'fps': '25', 'res': '5.6K', 'flare': '1000'}
         :return: None
         '''
-        self.set_test_mode(arg_mode)
-        self.mind.record_video()
-        pass
+        #self.mind.conf.mode = 'video'
+        self.set_camera_conf(arg_mode)
+        self.mind.run('video')
+
+
+    # ---------------------------------------------- ------------------------------------------
+    def preview(self,arg_mode):# complete dictionary , shooting_mode , params_mode,options_mode
+        #self.mind.conf.mode = 'preview'
+        self.set_camera_conf(arg_mode)
+        self.mind.run('preview')
+
 
     # ---------------------------------------------- ------------------------------------------
     def get_frw_version(self):
@@ -94,9 +103,9 @@ class Vcamera :
 
     def get_results(self, arg_path):
          if arg_path != '':
-             # affectation de la variable tes_env_target_dir doit etre mise dans set_test_mode
-             self.test_env.download_target_dir = arg_path
-         self.mind.get_results(self.test_env.download_target_dir)
+             # affectation de la variable tes_env_target_dir doit etre mise dans set_camera_conf
+             self.mind.conf.download_target_dir = arg_path
+         self.mind.get_results(self.mind.conf.download_target_dir)
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -117,14 +126,44 @@ class Vcamera :
 
     # ---------------------------------------------- ------------------------------------------
     def get_test_mode(self):
-        test_ev = self.test_env.get_environment()
-        if self.mode == 'still':
-            del test_ev['run_time']
+        test_ev = self.mind.conf.get_environment()
         return test_ev
 
     # ---------------------------------------------- ------------------------------------------
-    def set_test_mode(self,arg_dict_mode):
-        self.test_env.set_environment(arg_dict_mode)
+    def set_camera_conf(self,arg_dict_mode): # change name
+       '''
+
+       :param arg_dict_mode:
+       {
+          "shooting_mode" : "dual",
+          "params_mode"    :
+           {
+             "fps"     : "24,25,30,60"
+           },
+          "options_mode" :
+          {
+            "flare" : "ON,OFF",
+            "flare_art" :"RANDOM,ID,STRONG,LITE",
+            "bypass"    : "ON,OFF",
+            "ring_low_res" : "ON,OFF",
+            "dump_raw"     : "ON,OFF
+
+
+            "debud_dump" : "ON/OFF"
+
+          }
+        }
+       :return:
+       '''
+
+
+       assert ('shooting_mode' in arg_dict_mode.keys()) ,'no shooting_mode selected'
+       self.mind.conf.set_shooting_mode(arg_dict_mode['shooting_mode'])
+       if 'params_mode' in arg_dict_mode.keys():
+            self.mind.conf.set_params_mode(arg_dict_mode['params_mode'])
+       if 'options_mode' in arg_dict_mode.keys():
+           self.mind.conf.set_options_mode(arg_dict_mode['options_mode'])
+
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -187,6 +226,9 @@ class Vcamera :
     def cleanup(self,):
         self.mind.cleanup()
 
+    def run_scenario(self,arg_list):
+        self.mind.run_scenario(arg_list)
+
 
 
 
@@ -205,9 +247,91 @@ class Vcamera :
 
 #print (vcam.get_frw_version())
 # f ={'fps': '6', 'res': 'rien', 'flare': '1000'}
-# cam.set_test_mode(f)
+# cam.set_camera_conf(f)
 # print(cam.get_test_mode())
 
 # ----------------------------------------------  test : take_photo------------------------------------------
 # f ={'fps': '25', 'res': '5.6K', 'flare': '1000'}
 # vcam.take_photo(f)
+
+import time
+# from grid import  Grid
+# from camera import Camera
+# grid= Grid(arg_host_ip = "192.168.0.1",arg_host_http_path = '/var/www/html')
+# hard_cam  = Camera(username = 'root',host_ip = '192.168.0.202',ssh_passwd = '',web_port = 8042,arduino_port = '/dev/ARDUINO',linux_port = '/dev/LINUX',rtos_port = '/dev/RTOS',grid = grid)
+# vcam = Vcamera(hard_cam,'spherical')
+# scenario_s0 = ['t appc status disable',
+#                'sleep 3',
+#             't frw test disp_id 0',
+#             't frw test open',
+#             't frw test mode 5K_EAC_30_W_HEVC_IMX577',
+#             't frw test graph still_spherical',
+#             't frw test liveview',
+#             't frw cal raw 12',
+#             't frw cal bayer_width 3008',
+#             't frw test mode PHOTO_18MP_30_W_IMX577_BYPASS',
+#             't frw test still',
+#             'sleep 4 ',
+#             't frw test stop_still',
+#             't frw test mode 5K_EAC_30_W_HEVC_IMX577',
+#             't frw test liveview'
+#             ]
+# scenario_c0 = [
+#                 't appc status disable',
+#                 't frw test disp_id 0',
+#                 't frw test open',
+#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577',
+#                 't frw test graph still_spherical',
+#                 't frw test liveview',
+#                 't frw cal raw 16',
+#                 't frw cal bayer_width 4056',
+#                 't frw test mode PHOTO_12MP_30_W_IMX577_DUAL_CAL',
+#                 't frw test still',
+#                 'sleep 4 ',
+#                 't frw test stop_still',
+#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577',
+#                 't frw test liveview',
+#              ]
+# vcam.reset('soft')
+# vcam.run_scenario(scenario_s0)
+
+# time.sleep(4)
+# vcam.run_scenario(scenario_c0)
+# vcam.reset('soft')
+# time.sleep(4)
+# vcam.run_scenario(scenario_s0)
+# vcam.reset('soft')
+
+# dictio = {
+#     "shooting_mode": "lcd",
+#     "params_mode":
+#         {
+#             "fps": "30",
+#             "submode" : "",
+#             "stitch_mode":'EAC',
+#             "resolution" : "5K"
+#         },
+#     "options_mode":
+#         {
+#             'eac_split'      : "ON" ,
+#             'flare'          : "ON"  ,
+#             'flare_art'      : "RANDOM",
+#             'bypass'         : "ON"  ,
+#             'lrv'            : "ON" ,
+#             'stab'           : "ON",
+#             'stab_degree'    : "2",
+#             'ring_low_res'   : "ON",
+#             'exposure'       : "ON",
+#             'debug_dump'     : "ON",
+#             'raw_nbits'      : "6",
+#             'bayer_width'    : "4056",
+#             'dump_raw'       : "ON",
+#             'mpx'            : "18MPX",
+#             'run_time'       : "6"
+#
+#         }
+# }
+#
+# #vcam.set_camera_conf(dictio)
+# #print(vcam.mind.conf.get_environment())
+# vcam.preview(dictio)

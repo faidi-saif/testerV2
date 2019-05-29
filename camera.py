@@ -62,7 +62,7 @@ class Camera :
         serial_flag = self.serial_status()
         while serial_flag == False:
             time_elapsed = time_elapsed + 0.3  # time in the sleep of the serial_status
-            print("still checking for serial port")
+            #print("still checking for serial port")
             serial_flag = self.serial_status()
             if time_elapsed >= arg_timeout / 2 and reset_flag == False:
                 print(" reset camera ---- > look serial ports")
@@ -84,9 +84,10 @@ class Camera :
         '''
         time_elapsed = 0
         reset_flag = False
-        while self.netwk_manager.interface_explorer.find_by_ip(self.grid.host_ip) == False:
+        ip_adress  = self.grid.host_ip
+        while self.netwk_manager.interface_explorer.find_by_ip(ip_adress) == False:
             time.sleep(0.1)
-            print('waiting for network connection')
+            #print('waiting for network connection')
             time_elapsed = time_elapsed + 0.1
             if time_elapsed >= arg_timeout / 2 and reset_flag == False:
                 print(" reset camera ---- > look for interfaces again")
@@ -111,12 +112,13 @@ class Camera :
         is_ready_flag = True
         for el in arg_interface :
             assert (el == 'ssh' or el =='serial') ,' print invalid choice for interface choose "ssh" or "serial"'
-            if el == 'ssh':
-                ssh_flag = self.is_ssh_ready(arg_timeout) # blocking function
-                is_ready_flag = is_ready_flag and ssh_flag
             if el =='serial':
                 rtos_flag = self.is_serial_ready(arg_timeout ) # blocking function
                 is_ready_flag = is_ready_flag and rtos_flag
+            if el == 'ssh':
+                ssh_flag = self.is_ssh_ready(arg_timeout) # blocking function
+                is_ready_flag = is_ready_flag and ssh_flag
+
         return is_ready_flag
 
     # ---------------------------------------------- ------------------------------------------
@@ -182,16 +184,17 @@ class Camera :
     def flash(self,arg_mode,arg_frw_type):
         '''
         :param arg_mode: flashing mode which must be
-        :param arg_frw_type: firmware type must be spherical , Jbay , jbay not implemented yet
+        :param arg_frw_type: firmware type must be spherical or Jbay , Jbay not implemented yet
         :return:
         '''
         assert((arg_mode == 'arduino' or arg_mode == 'make') and arg_frw_type =='spherical'), 'invalid flash option , choose "arduino or "make" to set flash option'
         if arg_mode   == "arduino":
             self.netwk_manager.arduino_ser.fw_flash()
+
         elif arg_mode =="make":
             cam_ip = str(self.host_ip)
             binary_file = '../../../../waf_build/{}/build/eaglepeak/sd_fwupdate/DATA.bin'.format(arg_frw_type)
-            os.environ['VARIANT'] = 'arg_frw_type'
+            os.environ['VARIANT'] = arg_frw_type
             #print('../../../../admin/host_tools/gen/remote_flash.sh {} {}'.format(cam_ip,binary_file))
             os.system('../../../../admin/host_tools/gen/remote_flash.sh {} {}'.format(cam_ip,binary_file))
             #/waf_build/spherical/build/eaglepeak/sd_fwupdate/DATA.bin
@@ -278,12 +281,11 @@ class Camera :
 
 
 
-
-
-
-# grid= Grid(arg_host_ip = "192.168.0.1",arg_host_http_path='/var/www/html')
+# from grid import  Grid
+# grid = Grid(arg_host_ip = "192.168.0.1",arg_host_http_path='/var/www/html')
 # cam  = Camera(username = 'root',host_ip = '192.168.0.202',ssh_passwd='',web_port=8042,arduino_port='/dev/ARDUINO',linux_port='/dev/LINUX',rtos_port='/dev/RTOS',grid =grid)
-
+# cam.netwk_manager.arduino_ser.power_on()
+# cam.flash('arduino','spherical')
 #cam.flash('make','spherical')
 # cam.send_serial_command(arg_port=cam.rtos_port,arg_command="t dbg on")
 # cam.send_serial_command(arg_port=cam.rtos_port,arg_command="t version")

@@ -1,0 +1,41 @@
+{
+    "description": "S0 ... ",
+    "steps":
+    [
+      {
+        "case": "still",
+        "params":
+        {
+          "shooting_mode"  : "spherical",
+          "params_mode"    :
+           {
+             "fps"            : "30",
+             "resolution"     : "5K",
+             "stitch_mode"    : "EAC"
+           },
+          "options_mode" :
+          {
+            "flare"         : "disable",
+            "flare_art"     : "",
+            "bypass"        : "ON",
+            "ring_low_res"  : "disable",
+            "dump_raw"      : "ON",
+            "raw_nbits"     : "16",
+            "bayer_width"   : "4056",
+            "debug_dump"    : "disable",
+            "mpx"           : "18MP"
+
+          }
+        }
+      },
+      {
+        "case": "checker",
+        "params":
+        {
+          "out_directory"  : "~/Desktop/test_logs/still/photos/S0",
+          "TypeChecker"    : "FileNotNull"
+        }
+      }
+
+    ]
+}

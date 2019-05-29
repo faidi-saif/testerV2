@@ -7,8 +7,7 @@
       "params":
       {
         "option": "soft"
-      },
-      "logs" : "~/Desktop/test_logs/reset"
+      }
     }
   ]
 }

@@ -4,7 +4,7 @@ from network.serializerWithReader import SerializerWithReader
 from network.webServerAgent import WebServerAgent
 from network.interfaceExplorer import InterfaceExplorer
 import os
-
+import time
 class NetworkManager :
 
     def __init__(self,username,host,ssh_passwd,arduino_port,linux_port,rtos_port):
@@ -17,6 +17,7 @@ class NetworkManager :
         self.ssh_agent          = SshAgent(arg_username = username,arg_host = host,arg_passwd = ssh_passwd)
         self.wb_server          = WebServerAgent()
         self.interface_explorer = InterfaceExplorer()
+        #time.sleep(1)  # time to initialize the serial instance
 
     # ---------------------------------------------- ------------------------------------------
     def refresh(self):

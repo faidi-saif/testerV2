@@ -10,6 +10,7 @@ class ArduinoSerializer(Serializer):
         self.mstopbits = STOPBITS_ONE
         super().__init__(arg_port=arg_port,arg_baude_rate=arg_baude_rate,arg_parity=self.mparity,arg_stopbits=self.mstopbits)
 
+
     def __del__(self):
         super().__del__()
 
@@ -63,7 +64,7 @@ class ArduinoSerializer(Serializer):
         self.ser.flushInput()
         self.ser.flushOutput()
         self.ser.write(PRESS_SHUTT)  # press shutter
-        time.sleep(1)
+        time.sleep(0.5)
         os.system('sudo ykushcmd ykushxs -s YKa1184 -u')
         time.sleep(18)
         self.ser.flushInput()
@@ -73,8 +74,8 @@ class ArduinoSerializer(Serializer):
         self.ser.flushInput()
         self.ser.flushOutput()
         self.ser.write(RELEASE_SHUTT)
-        time.sleep(6)
-        #self.reset()
+        time.sleep(8)
+        self.reset()
 
     def press(self,arg_button):
         assert (arg_button == 'mode' or arg_button == 'shutter') ,"Invalid button , use : 'mode or 'shutter "

@@ -12,9 +12,10 @@ class ScenarioRunner :
         self.vcamera            = vcamera
         self.description        = ''
         self.steps              = []
-        self.step_take_photo    = 'take_photo'
+        self.step_preview       = 'preview'
+        self.step_still         = 'still'
         self.step_reset         = 'reset'
-        self.step_record_video  = 'record_video'
+        self.step_video         = 'video'
         self.step_checker       = 'checker'
         self.step_flash         = 'flash'
         self.step_reboot        = 'reboot'
@@ -88,7 +89,7 @@ class ScenarioRunner :
              else :
                  raise Exception('cant process step : {} camera is not ready'.format(arg_step ['case']))
 
-        elif arg_step ['case'] ==self.step_take_photo:
+        elif arg_step ['case'] ==self.step_still:
             if self.vcamera.is_ready('serial',arg_timeout=10):
                 mode = arg_step['params']
                 self.run_wlog(arg_step, self.vcamera.take_photo, mode)
@@ -96,7 +97,7 @@ class ScenarioRunner :
                 raise Exception('cant process step : {} camera is not ready'.format(arg_step['case']))
 
 
-        elif arg_step['case'] == self.step_record_video:
+        elif arg_step['case'] == self.step_video:
             if self.vcamera.is_ready('serial',arg_timeout=10):
                 mode = arg_step['params']
                 self.run_wlog(arg_step, self.vcamera.record_video, mode)
@@ -108,6 +109,13 @@ class ScenarioRunner :
                 mode     = arg_step['params']['mode']
                 frw_type = arg_step['params']['frw_type']
                 self.run_wlog(arg_step, self.vcamera.flash, mode,frw_type)
+            else:
+                raise Exception('cant process step : {} camera is not ready'.format(arg_step['case']))
+
+        elif arg_step['case'] == self.step_preview :
+            if self.vcamera.is_ready('ssh', arg_timeout=40):
+                mode     = arg_step['params']
+                self.run_wlog(arg_step, self.vcamera.preview, mode)
             else:
                 raise Exception('cant process step : {} camera is not ready'.format(arg_step['case']))
 
@@ -161,14 +169,14 @@ class ScenarioRunner :
         :return:
         '''
         # if firmware is not valid print results , reflash with valid firmware , exit
-        if (( arg_step['case'] == self.step_flash) and (self.vcamera.is_ready('ssh','serial',arg_timeout=160) == False )):
+        if (( arg_step['case'] == self.step_flash)): #and (self.vcamera.is_ready('ssh','serial',arg_timeout=90) == False )):
             print('invalid firmware ','{} -------> {}'.format(self.description,False))
             self.vcamera.flash('arduino',self.ref_frw_type)
-            if self.vcamera.is_ready('ssh','serial',arg_timeout=160):
+            if self.vcamera.is_ready('ssh','serial',arg_timeout=60):
                 print('a valid firmware is installed on the platform')
-                exit(0)
+                exit(1)
             else :
-                raise Exception("FlashErro , can't flash the platform with a valid firmware " )
+                raise Exception("FlashError , can't flash the platform with a valid firmware " )
         else:
             pass
 
@@ -190,6 +198,7 @@ class ScenarioRunner :
         performed after each scenario
         :return:
         '''
+        # reinit virtual camera ( all the
         pass
 
     # ---------------------------------------------- ------------------------------------------
@@ -210,10 +219,11 @@ class ScenarioRunner :
         scenario = self.load_json(arg_scenario_file)
         self.description = scenario['description']
         self.steps       = scenario['steps']
-        print("[--------------------------------------------- start running sceanrio : {} --------------------------------]".format(self.description))
+       # print("[--------------------------------------------- start running sceanrio : {} --------------------------------]".format(self.description))
 
         for step in self.steps :
-            print(" case --------------------------------> " + step['case'])
+            #print(" case --------------------------------> " + step['case'])
+
             self.run_pre_step(step)
 
             self.res = self.run(step)
@@ -224,7 +234,7 @@ class ScenarioRunner :
 
             self.run_post_step(step)
 
-        #self.run_post_scenario()
+        self.run_post_scenario()
 
 
 

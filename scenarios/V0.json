@@ -1,0 +1,29 @@
+{
+    "description": "V0 ... ",
+    "steps":
+    [
+      {
+        "case": "video",
+        "params":
+        {
+          "shooting_mode"  : "spherical",
+          "params_mode"    :
+           {
+             "fps"            : "15",
+             "stticth_mode"   : "EAC"
+           },
+          "options_mode" :
+          {
+            "flare"         : "OFF",
+            "flare_art"     : "",
+            "bypass"        : "enable",
+            "ring_low_res"  : "disable",
+            "debug_dump"    : "disable",
+            "run_time"      : "3"
+          }
+        }
+      }
+
+
+    ]
+}
