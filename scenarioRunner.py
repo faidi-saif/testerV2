@@ -214,12 +214,12 @@ class ScenarioRunner :
            test cases
         6- run post scenario actions
         '''
-        #self.run_pre_scenario()
+        self.run_pre_scenario()
 
         scenario = self.load_json(arg_scenario_file)
         self.description = scenario['description']
         self.steps       = scenario['steps']
-       # print("[--------------------------------------------- start running sceanrio : {} --------------------------------]".format(self.description))
+        print("[--------------------------------------------- start running sceanrio : {} --------------------------------]".format(self.description))
 
         for step in self.steps :
             #print(" case --------------------------------> " + step['case'])
