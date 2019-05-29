@@ -2,6 +2,7 @@ from network.serializer import *
 from network.arduinoOptions import *
 import os
 
+device_serial = 'YKa1184'
 
 class ArduinoSerializer(Serializer):
 
@@ -16,9 +17,9 @@ class ArduinoSerializer(Serializer):
 
 
     def power_on(self):  # tested ok
-        os.system('sudo ykushcmd ykushxs -s YKa1184 -d')
+        os.system('sudo ykushcmd ykushxs -s {} -d'.format(device_serial))
         time.sleep(0.5)
-        os.system('sudo ykushcmd ykushxs -s YKa1184 -u')
+        os.system('sudo ykushcmd ykushxs -s {} -u'.format(device_serial))
         self.ser.flushInput()
         self.ser.flushOutput()
         self.ser.write(PRESS_POW)
@@ -57,7 +58,7 @@ class ArduinoSerializer(Serializer):
         time.sleep(0.5)
 
     def fw_flash(self):
-        os.system('sudo ykushcmd ykushxs -s YKa1184 -d')
+        os.system('sudo ykushcmd ykushxs -s {} -d'.format(device_serial))
         self.ser.flushInput()
         self.ser.flushOutput()
         self.ser.write(PRESS_POW)  # press power
@@ -65,7 +66,7 @@ class ArduinoSerializer(Serializer):
         self.ser.flushOutput()
         self.ser.write(PRESS_SHUTT)  # press shutter
         time.sleep(0.5)
-        os.system('sudo ykushcmd ykushxs -s YKa1184 -u')
+        os.system('sudo ykushcmd ykushxs -s {} -u'.format(device_serial))
         time.sleep(18)
         self.ser.flushInput()
         self.ser.flushOutput()
@@ -94,9 +95,9 @@ class ArduinoSerializer(Serializer):
         self.ser.write(release)
 
     def reboot(self):
-        os.system('sudo ykushcmd ykushxs -s YKa1184 -d')
+        os.system('sudo ykushcmd ykushxs -s {} -d'.format(device_serial))
         time.sleep(0.5)
-        os.system('sudo ykushcmd ykushxs -s YKa1184 -u')
+        os.system('sudo ykushcmd ykushxs -s {} -u'.format(device_serial))
         self.ser.flushInput()
         self.ser.flushOutput()
         self.ser.write(PRESS_POW)
