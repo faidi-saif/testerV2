@@ -1,8 +1,6 @@
 import json
 import os
 from logger import Logger
-from marshmallow import Schema, fields, pprint, ValidationError
-# pip3 install -U marshmallow --pre
 import  check.checker as checker
 
 
@@ -64,8 +62,8 @@ class ScenarioRunner :
             log_path = str(self.logger.create_dir(self.check_format(arg_step['logs'])))
             rtos_path = log_path + '/rtos.txt'
             linux_path = log_path + '/linux.txt'
-            self.logger.write(rtos_path, data[0])
-            self.logger.write(linux_path, data[1])
+            self.logger.write(rtos_path, data[1])
+            self.logger.write(linux_path, data[0])
         else :
             #print(*args)
             function(*args)
@@ -75,13 +73,13 @@ class ScenarioRunner :
 
     def run(self,arg_step):
         '''
-
         :param arg_step: step of the scenario
         :return: result of the step ( None  True or False )
         '''
-
-
         result = None
+        ret = {}
+        test_result = {}
+
         if arg_step ['case']   == self.step_reset:
              if self.vcamera.is_ready('serial',arg_timeout=10):
                 soft_hard = arg_step['params']['option']
@@ -121,18 +119,36 @@ class ScenarioRunner :
 
 
         elif arg_step ['case'] == self.step_checker:
-            if self.vcamera.is_ready('ssh',arg_timeout=30) :
+            if self.vcamera.is_ready('ssh',arg_timeout=120) :
                 checker = arg_step['params']['TypeChecker']
                 if checker == 'FileNotNull':
                     out_dir = self.check_format(arg_step['params']['out_directory'])
                     self.vcamera.get_results(out_dir)
                     param = out_dir
+                    ret = self.check(checker, param) # {'result' : True or False}
                 elif checker =='FrwVersion' :
                     param = self.vcamera
-                result = self.check(checker,param)
-                return result
+                    ret = self.check(checker, param) # {'result' : True or False , firmware_version : ''xxx'}
+                elif checker == 'VideoStat':
+                    out_dir = self.check_format(arg_step['params']['out_directory'])
+                    self.vcamera.get_results(out_dir)
+                    param = out_dir
+                    ret = self.check(checker, param) # {'result': True, 'files': [{'name': 'GS010263', 'type': 'MP4', 'size': 18172001, 'duration': '00:00:02.75'},]}
+                elif checker == 'PhotoStat':
+                    out_dir = self.check_format(arg_step['params']['out_directory'])
+                    self.vcamera.get_results(out_dir)
+                    param = out_dir
+                    ret = self.check(checker, param)  # {'result': True, 'files': [{'name': 'GS010263', 'type': 'JPG', 'size': 18172001},]}
+
+                result = ret.pop('result') # get the value of ret['result'] and remove it from ret
+                test_result.update(ret)    # copy the other fields in the final dictionary
             else:
                 raise Exception('cant process step : {} camera is not ready'.format(arg_step['case']))
+
+
+
+        test_result.update({'result': result})
+        return test_result
 
 
 
@@ -182,6 +198,7 @@ class ScenarioRunner :
 
 
     def before_test(self):
+        print('*** cleanup camera ***')
         self.vcamera.cleanup()
 
     # ---------------------------------------------- ------------------------------------------
@@ -229,14 +246,23 @@ class ScenarioRunner :
             self.run_pre_step(step)
 
             self.res = self.run(step)
-            if self.res is not None :
-                final_result = self.res and self.vcamera.camera.is_serial_ready(arg_timeout=10) # final result = camera alive and test ok
-                ret_value = {self.description : final_result}
+            if self.res['result'] is not None :
+                self.res['result'] = self.res['result'] and self.vcamera.camera.is_serial_ready(arg_timeout=10) # final result = camera alive and test ok
+                ret_value = {'description' : self.description}
+                ret_value.update(self.res)
                 self.results.append(ret_value)
 
             self.run_post_step(step)
 
         self.run_post_scenario()
+
+    def get_test_result(self,result_path):
+        result_path = self.check_format(result_path) # get the equivalent to ~/ in path
+        for el in self.results  :
+            print(json.dumps(el,indent = 4))
+        with open(result_path, 'w') as outfile:
+            json.dump(self.results, outfile,indent=4)
+
 
 
 
@@ -248,4 +274,5 @@ class ScenarioRunner :
 # s = ScenarioRunner('camera')
 # s.run_scenario('./scenarios/scenario1.json')
 ##if self.vcamera.camera.is_serial_ready(arg_timeout=30):
+
 

@@ -1,0 +1,30 @@
+
+
+
+{
+    "description": "preview ... ",
+    "steps":
+    [
+      {
+        "case": "preview",
+        "params":
+          {
+          "shooting_mode" : "lcd",
+          "params_mode":
+          {
+            "fps"         : "25",
+            "stitch_mode" : "EAC",
+            "resolution"  : "5K.6"
+          },
+          "options_mode":
+          {
+            "eac_split"   : "disable",
+            "lrv"         : "enable",
+            "bypass"      : "enable",
+            "rear"        : "disable"
+          }
+        }
+      }
+    ]
+}
+

@@ -1,5 +1,5 @@
 {
-    "description": "S0 ... ",
+    "description": "S0 : 6k ERP 30fps ",
     "steps":
     [
       {
@@ -10,32 +10,41 @@
           "params_mode"    :
            {
              "fps"            : "30",
-             "resolution"     : "5K",
-             "stitch_mode"    : "EAC"
+             "stitch_mode"    : "ERP",
+             "resolution"     : "6K"
            },
           "options_mode" :
           {
-            "flare"         : "disable",
+            "flare"         : "0",
             "flare_art"     : "",
-            "bypass"        : "ON",
+            "bypass"        : "disable",
             "ring_low_res"  : "disable",
-            "dump_raw"      : "ON",
+            "dump_raw"      : "disable",
             "raw_nbits"     : "16",
-            "bayer_width"   : "4056",
+            "bayer_width"   : "3008",
             "debug_dump"    : "disable",
             "mpx"           : "18MP"
 
           }
-        }
+        },
+        "logs" : "~/Desktop/test_logs/S0/serials"
+      },
+      {
+      "case": "reset",
+      "params":
+      {
+        "option": "soft"
+      }
       },
       {
         "case": "checker",
         "params":
         {
-          "out_directory"  : "~/Desktop/test_logs/still/photos/S0",
+          "out_directory"  : "~/Desktop/test_logs/S0/photos",
           "TypeChecker"    : "FileNotNull"
         }
       }
+
 
     ]
 }

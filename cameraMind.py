@@ -31,11 +31,12 @@ class CameraMind :
         :param arg_result_path: path where to save the video or photo tested
         :return:
         '''
-        self.vcamera.is_ready('ssh','serial',arg_timeout=40)
+        self.vcamera.is_ready('ssh','serial',arg_timeout=50)
+        time.sleep(2.4)
         self.vcamera.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
-        self.vcamera.camera.tcmd('t dbg off')
+        #self.vcamera.camera.tcmd('t dbg off')
         self.vcamera.get_files('/tmp/fuse_d/DCIM/100GOPRO/',arg_result_path)
-        #self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/*')
+        self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/*')
 
 
 
@@ -44,7 +45,7 @@ class CameraMind :
         self.vcamera.camera.soft_reset()
         self.vcamera.is_ready('ssh', arg_timeout=80)
         self.vcamera.clean_content('/tmp/fuse_d/DCIM/100GOPRO/*')
-        self.vcamera.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
+        #self.vcamera.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -73,8 +74,8 @@ class CameraMind :
         cmd = self.find_cmd_type(arg_cmd)
         if cmd == 'tcmd':
             self.vcamera.camera.tcmd(arg_cmd)
+            #print(arg_cmd)
             time.sleep(0.3)
-            #print('tcmd ' + arg_cmd )
         elif cmd == 'sleep':
             duration = float(arg_cmd.split()[1])
             time.sleep(duration)
@@ -90,11 +91,13 @@ class CameraMind :
         :param arg_cmd_list: list of commands to eb executed
         :return: None
         '''
-        for cmd in arg_cmd_list :
-            print(cmd)
+        # for cmd in arg_cmd_list :
+        #     print(cmd)
             #time.sleep(0.3)  # time given to each command to be sent on serial port  , test with 0.1s fails ---> remove inside execute
-        # for co in arg_cmd_list :
-        #     self.execute(co)
+        for co in arg_cmd_list :
+            print(co)
+            self.execute(co)
+
 
 
 
@@ -134,6 +137,7 @@ class CameraMind :
         2 - run the list of commands
         :return:None
         '''
+        self.check_conf('still')
         still_cmds = []
         pre_still       = self.pre_still_cmds()
         flare_cmd       = self.get_flare_cmds()
@@ -156,11 +160,12 @@ class CameraMind :
         else : # en dual fix it later
             cmd = 't frw test graph still_spherical'
         pre_still.append(cmd)
+        pre_still = pre_still + ['t frw test liveview', 'sleep 2']
         return pre_still
 
     # ---------------------------------------------- ------------------------------------------
     def post_still_cmds(self):
-        post_still =['t frw test still','sleep 4','t frw test stop_still']
+        post_still =['t frw test still','sleep 5','t frw test stop_still']
         return  post_still
 
     # ---------------------------------------------- ------------------------------------------
@@ -194,6 +199,7 @@ class CameraMind :
                 cmd.append('t frw test graph video_rear')
             else : # disable
                 cmd.append('t frw test graph video')
+        cmd = cmd + ['t frw test liveview', 'sleep 1.5']
         return cmd
 
     # ---------------------------------------------- ------------------------------------------
@@ -208,11 +214,10 @@ class CameraMind :
 
     # ---------------------------------------------- preview ------------------------------------------
     def preview(self):
-        prev_cmds = ['t appc status disable','sleep 4','t dbg on ','t frw test open']
+        prev_cmds = ['t dbg on','t appc status disable','sleep 4','t frw test open']
         self.check_conf('preview')
         tag = self.generate_tag('preview')
-        prev_cmds.append('t frw test mode {}'.format(tag))
-        prev_cmds.append('t frw test liveview')
+        prev_cmds = prev_cmds + ['t frw test mode {}'.format(tag),'sleep 0.2']
         return prev_cmds
 
     # ---------------------------------------------- get_flare_cmds ------------------------------------------
@@ -226,8 +231,8 @@ class CameraMind :
                 cmd.append('t frw stitch flare_art_cor enable {} {}'.format(self.conf.options_mode['flare_art_front_corr'],self.conf.options_mode['flare_art']))
             else : # flare = 1
                 cmd.append('t frw stitch flare_art_cor disable')
-        # finally
         cmd.append('t frw stitch flare_fake_dsp_sleep {} {}'.format(self.conf.options_mode['flare_fake'],self.conf.options_mode['flare_fake_time']))
+            # check the position of this line
         return cmd
 
     # ----------------------------------------------get_stab_cmds ------------------------------------------
@@ -370,7 +375,7 @@ class CameraMind :
             # check stitch_mode
             assert(self.conf.params_mode['stitch_mode'] == 'EAC' or self.conf.params_mode['stitch_mode'] == 'ERP')
             # check_resolution
-            assert (self.conf.params_mode['resolution'] == '5K' or self.conf.params_mode['resolution'] == '4K' or self.conf.params_mode['resolution'] == '3K'
+            assert (self.conf.params_mode['resolution'] == '5K'  or self.conf.params_mode['resolution'] == '4K' or self.conf.params_mode['resolution'] == '3K'
                     or self.conf.params_mode['resolution'] == 'QXGA' or self.conf.params_mode['resolution'] == 'FHD')
         # ---------------------------------------------- > video
         #elif arg_mode == 'video':
@@ -397,7 +402,7 @@ class CameraMind :
                 assert(self.conf.params_mode['stitch_mode'] == 'ERP' and self.conf.params_mode['resolution'] == '6K')
             # dual
             else : # dual
-                assert ()
+
                 pass
 
     # ----------------------------------------------check_options ------------------------------------------
@@ -486,4 +491,5 @@ class CameraMind :
 
 
 #s_exec.execute('sleep    4')
+
 

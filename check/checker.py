@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import os
-from vcamera import Vcamera
+
 
 # ----------------------------------------------base class checker ------------------------------------------
 class Checker (ABC):
@@ -26,40 +26,108 @@ class FileNotNull(Checker):
     def check(self, *args):
         resul = True
         path =args[0]
-        print(path)
+        #print(path)
         assert (path is not None) , " No directory for check passed "
         files = os.listdir(path)
-        for file in files :
-            file_path = path + '/' + file
-            r = os.stat(file_path)
-            if r.st_size == 0:
-                res = False
-                print('file "{}" is  null'.format(file))
-            else:
-                res = True
-            resul = resul and res
-            self._result = resul
-        return self._result
-
-
+        if files != []:
+            for file in files :
+                file_path = path + '/' + file
+                r = os.stat(file_path)
+                if r.st_size == 0:
+                    res = False
+                    print('file "{}" is  null'.format(file))
+                else:
+                    res = True
+                resul = resul and res
+        else :
+            resul = False
+        return {'result' : resul}
+ # ----------------------------------------------FrwVersion checker ------------------------------------------
 class FrwVersion(Checker):
 
     def check(self,*args ):
         cam = args[0]
+        version = None
         if cam.is_ready('serial','ssh', arg_timeout=40) :
-            result = cam.get_frw_version()
-            if result != '':
-                return True
+            version = cam.get_frw_version()
+            if version != '':
+                ret =  True
             else:
-                return False
+                ret =  False
         else :
-            return False
+            ret =  False
+        return {'result' : ret ,'firmware version' : version}
+
+
+# ----------------------------------------------FileStat checker ------------------------------------------
+import subprocess
+
+class FileStat(Checker):
+
+
+
+
+    def extract_properties(self,arg_file_path,arg_file):
+        file_path = arg_file_path + '/' + arg_file
+        f = arg_file.split('.')
+        name        = f[0]
+        type        = f[1]
+        ret         = os.stat(file_path)
+        return {'name' : name, 'type':type ,'size':ret.st_size}
+
+
+    def check(self,*args ):
+        files_properties = []
+        result = True
+        path = args[0]
+        assert (path is not None), " No directory for check passed "
+        files = os.listdir(path)
+        if files != [] :
+            for file in files:
+                file_prop = self.extract_properties(path,file)
+                files_properties.append(file_prop)
+                if file_prop['size'] == 0:
+                    res = False
+                    print('file "{}" is  null'.format(file))
+                else:
+                    res = True
+                result = result and res
+        else :
+            result = False
+
+        return {'result':result,'files' : files_properties}
+
+
+
+# ----------------------------------------------VideoStat checker ------------------------------------------
+class VideoStat(FileStat):
+
+
+    def get_length(self,filename):
+        result = subprocess.Popen(["ffprobe", filename],
+                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        for el in result.stdout.readlines():
+            pos = el.decode().find('Duration')
+            if  pos >= 0:
+                return ( el.decode()[pos+10 :pos+21]) # from thenposition of the word Duration to the end of the duration value
+
+    def extract_properties(self,arg_file_path,arg_file):
+        file_path = arg_file_path + '/' + arg_file
+        f = arg_file.split('.')
+        name        = f[0]
+        type        = f[1]
+        ret         = os.stat(file_path)
+        duration    = self.get_length(file_path)
+        return {'name' : name, 'type':type ,'size':ret.st_size,'duration':duration}
+
+
+# ----------------------------------------------PhotoStat checker ------------------------------------------
+class PhotoStat(FileStat):
+    pass
 
 
 
 
 
-
-
-        # c = FileNotNull()
-# print(c.check('/home/saif/Desktop/photo_logs'))
+# c = VideoStat()
+# print(c.check('/home/saif/Desktop/test_logs/C0/photos'))

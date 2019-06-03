@@ -3,7 +3,8 @@ to setup the tester follow these instructions :
 1- install the following packages :
 	* pip3 install bs4
 	* pip3 install wget
-	* pip3 install pyserial 
+	* pip3 install serial 
+	* pip3 install paramiko
 
 2- setup serial ports 
 	* check the {idProduct} and {idVnedor} of your arduino and edit the file '94-serials.rules'

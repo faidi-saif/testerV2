@@ -9,20 +9,20 @@
           "shooting_mode"         : "spherical",
           "options_mode" :
           {
-            "flare"               : "0",
+            "flare"               : "2",
             "flare_art"           : "identity",
             "flare_fake"          : "enable",
             "flare_fake_time"     : "2",
             "flare_art_front_corr": "60",
             "bypass"              : "enable",
-            "run_time"            : "3",
-            "debug_dump"          : "disable",
+            "run_time"            : "10",
+            "debug_dump"          : "enable",
             "debug_dump_opt"      : "yuv,data",
             "ring_high_res"       : "enable",
-            "stab"                : "disable",
-            "spher_eis"           : "0",
-            "stab_degree"         : "0.7",
-            "exposure"            : "enable"
+            "stab"                : "enable",
+            "stab_degree"         : "0.5",
+            "exposure"            : "enable",
+            "spher_eis"           : "disable"
           }
         }
       }
