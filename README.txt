@@ -35,7 +35,23 @@ to setup the tester follow these instructions :
 	* setup the device serial_number : 
 		- get the serial number using : 'sudo ykushcmd ykushxs -l' , example: {YKa1184} 
 		- in ./network/arduinoSerializer edit the variable : "device_serial" to adapt it to 
-		  your serial_number 
+		  your serial_number
+ 
+additional instructions
+to run a scenario : 
+    we are based on JSON files for scenarios description :
+        *in ./sceanarios you find many examples of scenarios 
+        *the main.py file is structured as follow : 
+            1- before_test 
+            2- scenario(s) executed
+            3- get_test_result ( in which we pass the file where to store the result file, this JSON is a list of test results marked by its description)
+        * we have the possibility to run the tester with(out) Arduino according to the option passed as an argument, example : 
+             -- python3 main.py -s preview_5k_30,video30 --arduino -p ~/Desktop/test_results.json --
+            where : -s stands for scenario
+                    -p stands for test_results.json path
+                    --arduino means to run with Arduino ( note that without Arduino we can't make a reset on camera, so the test will fail for now)
+
+
 
 
 
