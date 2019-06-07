@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import os
+import subprocess
 
 
 # ----------------------------------------------base class checker ------------------------------------------
@@ -25,8 +26,7 @@ class FileNotNull(Checker):
 
     def check(self, *args):
         resul = True
-        path =args[0]
-        #print(path)
+        path  = args[0]
         assert (path is not None) , " No directory for check passed "
         files = os.listdir(path)
         if files != []:
@@ -60,7 +60,6 @@ class FrwVersion(Checker):
 
 
 # ----------------------------------------------FileStat checker ------------------------------------------
-import subprocess
 
 class FileStat(Checker):
 
@@ -73,16 +72,18 @@ class FileStat(Checker):
         name        = f[0]
         type        = f[1]
         ret         = os.stat(file_path)
-        return {'name' : name, 'type':type ,'size':ret.st_size}
+        size        = str(ret.st_size/1000) + 'KB'
+        return {'name' : name, 'type':type ,'size':size}
 
 
     def check(self,*args ):
         files_properties = []
-        result = True
-        path = args[0]
+        result           = True
+        path             = args[0]
         assert (path is not None), " No directory for check passed "
-        files = os.listdir(path)
-        if files != [] :
+        files            = os.listdir(path)
+        files_number     = len(files)
+        if files  != [] :
             for file in files:
                 file_prop = self.extract_properties(path,file)
                 files_properties.append(file_prop)
@@ -91,11 +92,11 @@ class FileStat(Checker):
                     print('file "{}" is  null'.format(file))
                 else:
                     res = True
-                result = result and res
+                result  = result and res
         else :
             result = False
 
-        return {'result':result,'files' : files_properties}
+        return {'result':result,'number of files':files_number,'files' : files_properties}
 
 
 
@@ -117,8 +118,9 @@ class VideoStat(FileStat):
         name        = f[0]
         type        = f[1]
         ret         = os.stat(file_path)
+        size        = str(ret.st_size/1000) + 'KB'
         duration    = self.get_length(file_path)
-        return {'name' : name, 'type':type ,'size':ret.st_size,'duration':duration}
+        return {'name' : name, 'type':type ,'size':size,'duration':duration}
 
 
 # ----------------------------------------------PhotoStat checker ------------------------------------------

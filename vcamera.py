@@ -83,7 +83,7 @@ class Vcamera :
         :return: names of the files in the arg_path
         '''
         files = self.camera.netwk_manager.ssh_agent.execute_command('ls ' + arg_path)
-        print('files :  ',files)
+        print('files in {} : '.format(arg_path),files)
         return files
 
 
@@ -105,6 +105,8 @@ class Vcamera :
          if arg_path != '':
              # affectation de la variable tes_env_target_dir doit etre mise dans set_camera_conf
              self.mind.conf.download_target_dir = arg_path
+         else :
+             pass
          self.mind.get_results(self.mind.conf.download_target_dir)
 
 
@@ -156,7 +158,8 @@ class Vcamera :
        :return:
        '''
 
-
+       #erase_previous_conf
+       self.mind.conf.reset_test_env()
        assert ('shooting_mode' in arg_dict_mode.keys()) ,'no shooting_mode selected'
        self.mind.conf.set_shooting_mode(arg_dict_mode['shooting_mode'])
        if 'params_mode' in arg_dict_mode.keys():
@@ -223,9 +226,11 @@ class Vcamera :
     def flash(self,arg_mode,arg_frw_type):
         self.camera.flash(arg_mode,arg_frw_type)
 
+    # ---------------------------------------------- ------------------------------------------
     def cleanup(self,):
         self.mind.cleanup()
 
+    # ---------------------------------------------- ------------------------------------------
     def run_scenario(self,arg_list):
         self.mind.run_scenario(arg_list)
 
@@ -258,43 +263,63 @@ import time
 # from grid import  Grid
 # from camera import Camera
 # grid= Grid(arg_host_ip = "192.168.0.1",arg_host_http_path = '/var/www/html')
-# hard_cam  = Camera(username = 'root',host_ip = '192.168.0.202',ssh_passwd = '',web_port = 8042,arduino_port = '/dev/ARDUINO',linux_port = '/dev/LINUX',rtos_port = '/dev/RTOS',grid = grid)
+# hard_cam  = Camera(username = 'root',host_ip = '192.168.0.202',ssh_passwd = '',web_port = 8042,arduino_port = '/dev/ARDUINO',linux_port = '/dev/LINUX',rtos_port = '/dev/RTOS',grid = grid,control_mode='complete')
 # vcam = Vcamera(hard_cam,'spherical')
-# scenario_s0 = ['t appc status disable',
-#                'sleep 3',
-#             't frw test disp_id 0',
-#             't frw test open',
-#             't frw test mode 5K_EAC_30_W_HEVC_IMX577',
-#             't frw test graph still_spherical',
-#             't frw test liveview',
-#             't frw cal raw 12',
-#             't frw cal bayer_width 3008',
-#             't frw test mode PHOTO_18MP_30_W_IMX577_BYPASS',
-#             't frw test still',
-#             'sleep 4 ',
-#             't frw test stop_still',
-#             't frw test mode 5K_EAC_30_W_HEVC_IMX577',
-#             't frw test liveview'
-#             ]
+
+# vcam.get_results('/home/saif/Desktop')
+# vcam.get_results('/home/saif/Desktop')
+# vcam.get_results('/home/saif/Desktop')
+# vcam.get_results('/home/saif/Desktop')
+# #
+# vcam.ls_files('/tmp/fuse_d/DCIM/100GOPRO/')
+# #
+# scenario_s0 = [ 't dbg on',
+#                 't appc status disable',
+#                 'sleep 4',
+#                 't frw test disp_id 0',
+#                 't frw test open',
+#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577_BYPASS',
+#                 't frw test graph still_spherical',
+#                 't frw test liveview',
+#                 'sleep 2',
+#                 't frw cal raw 12',
+#                 't frw cal bayer_width 3008',
+#                 't frw test mode PHOTO_18MP_30_W_IMX577',
+#                 't frw test still',
+#                 'sleep 5 ',
+#                 't frw test stop_still',
+#                 # 't frw test mode 5K_EAC_30_W_HEVC_IMX577_BYPASS',
+#                 # 't frw test liveview'
+#                 ]
 # scenario_c0 = [
 #                 't appc status disable',
 #                 't frw test disp_id 0',
 #                 't frw test open',
-#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577',
+#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577_BYPASS',
 #                 't frw test graph still_spherical',
 #                 't frw test liveview',
+#                 'sleep 2',
 #                 't frw cal raw 16',
 #                 't frw cal bayer_width 4056',
 #                 't frw test mode PHOTO_12MP_30_W_IMX577_DUAL_CAL',
 #                 't frw test still',
-#                 'sleep 4 ',
+#                 'sleep 5',
 #                 't frw test stop_still',
-#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577',
+#                 't frw test mode 5K_EAC_30_W_HEVC_IMX577_BYPASS',
 #                 't frw test liveview',
 #              ]
-# vcam.reset('soft')
+# scebario_test1 = [
+#
+# ]
+# # vcam.reset('soft')
+# # time.sleep(6)
+#
+# vcam.start_acquisition()
 # vcam.run_scenario(scenario_s0)
-
+# time.sleep(3)
+# vcam.stop_acquisition()
+# data = vcam.get_data()
+# print(data[1])
 # time.sleep(4)
 # vcam.run_scenario(scenario_c0)
 # vcam.reset('soft')

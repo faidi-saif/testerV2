@@ -1,5 +1,8 @@
+
+
+
 {
-    "description": "preview ... ",
+    "description": "preview 5.6K 30 fps ",
     "steps":
     [
       {
@@ -15,9 +18,10 @@
           },
           "options_mode":
           {
-            "lrv"         : "disable",
+            "eac_split"   : "disable",
+            "lrv"         : "enable",
             "bypass"      : "enable",
-            "rear"        : "enable"
+            "rear"        : "disable"
           }
         }
       }

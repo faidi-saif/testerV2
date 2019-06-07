@@ -1,5 +1,5 @@
 {
-    "description": "record video with ... ",
+    "description": "record video with 5.6K 30 fps 30s ",
     "steps":
     [
       {
@@ -15,7 +15,7 @@
             "flare_fake_time"     : "2",
             "flare_art_front_corr": "60",
             "bypass"              : "enable",
-            "run_time"            : "3",
+            "run_time"            : "3600",
             "debug_dump"          : "disable",
             "debug_dump_opt"      : "yuv,data",
             "ring_high_res"       : "enable",
@@ -25,7 +25,24 @@
             "exposure"            : "enable"
           }
         },
-        "logs" : "~/Desktop/test_logs/V0/24/serials"
+        "logs" : "~/Desktop/test_logs/V0/30/serials"
+      },
+
+      {
+      "case": "reset",
+      "params":
+      {
+        "option": "soft"
+      }
+      },
+
+      {
+        "case": "checker",
+        "params":
+        {
+          "out_directory"  : "~/Desktop/test_logs/V0/30/videos",
+          "TypeChecker"    : "VideoStat"
+        }
       }
 
     ]

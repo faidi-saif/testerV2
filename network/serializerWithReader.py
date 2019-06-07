@@ -21,7 +21,10 @@ class SerializerWithReader(Serializer):
 
     # ---------------------------------------------------append data from serial port ------------------------------------
     def read_data(self):
-        #print("thread for ",self.mthread_name," started ")
+        '''
+        store the data from serial ports
+        :return: None
+        '''
         self.clean_data()
         while self.thread_exit_flag == False:
             len_data = self.ser.inWaiting()
@@ -33,6 +36,10 @@ class SerializerWithReader(Serializer):
     # --------------------------------------------------- start_acquisition --------------------------------------------------------
 
     def start_acquisition(self):
+        '''
+        start the thread for a new acquisition
+        :return: None
+        '''
         self.thread_exit_flag = False
         self.mthread = threading.Thread(name = self.mthread_name, target = self.mthread_target)
         self.mthread.start()
@@ -40,6 +47,10 @@ class SerializerWithReader(Serializer):
 
     # --------------------------------------------------- getter for data --------------------------------------------------------
     def get_data(self):
+        '''
+        decode data
+        :return: data stored form serial ports
+        '''
         self.m_data = ""
         for line in self.coded_data:
             try:
@@ -50,14 +61,21 @@ class SerializerWithReader(Serializer):
 
     # --------------------------------------------------- clean buffer --------------------------------------------------------
     def clean_data(self):
+        '''
+        after reading , clean variables for new reading
+        :return: None
+        '''
         self.m_data = ""
         self.coded_data.clear()
 
     # ---------------------------------------------------stop acquisition --------------------------------------------------------
     def stop_acquisition(self):
+        '''
+        stop the acquisition at the end of reading
+        :return:
+        '''
         self.thread_exit_flag = True
         self.mthread.join()
-        #print("thread for ",self.mthread_name," STOPPED ")
 
     # --------------------------------------------------- destructor --------------------------------------------------------
     def __del__(self):

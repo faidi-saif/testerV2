@@ -12,10 +12,6 @@ class CameraConfig:
     # ----------------------------------------------- default config  -----------------------------------------
 
 
-
-
-
-
         self.mode                  = ''
         self._download_target_dir  = os.environ['HOME'] + '/Desktop/test_capt'
         self.encoder               = 'HEVC'
@@ -119,6 +115,11 @@ class CameraConfig:
 
     # ----------------------------------------------- params_mode_setter -----------------------------------------------------
     def set_params_mode(self,arg_params_mode):
+        '''
+        set the parameters of the  camera mode
+        :param arg_params_mode:
+        :return: None
+        '''
         for key, value in arg_params_mode.items():
             key = key.strip()
             if key in self.params_mode.keys():
@@ -136,10 +137,15 @@ class CameraConfig:
 
 
     def set_options_mode(self,arg_options_mode):
+        '''
+        set all the options camera config
+        :param arg_options_mode: class attribute having all the options
+        :return: None
+        '''
         for key, value in arg_options_mode.items():
             key = key.strip()
             if key in self.options_mode.keys():
-                if key                      == 'eac_split':
+                if key                                                == 'eac_split':
                     self.options_mode['eac_split']                    = arg_options_mode['eac_split']
                 elif key                                              == 'flare':
                     self.options_mode['flare']                        = arg_options_mode['flare']

@@ -6,21 +6,22 @@ class Logger:
     def __init__(self):
         pass
 
-
+    #---------------------------------------------- ------------------------------------------
     def open(self,arg_file):
         file = open(arg_file,"w+")
         return file
 
-
+    # ---------------------------------------------- ------------------------------------------
     def write(self,arg_file,arg_data):
         file = self.open(arg_file)
         file.write(arg_data)
         self.close(file)
 
+    # ---------------------------------------------- ------------------------------------------
     def close(self,arg_file):
        arg_file.close()
 
-
+    # ---------------------------------------------- ------------------------------------------
     def __del__(self):
         pass
 
@@ -51,3 +52,5 @@ class Logger:
             shutil.rmtree(to_path)
         shutil.copytree(from_path, to_path)
 
+# l = Logger()
+# l.clean_dir('/home/saif/Desktop/test_logs/S0')

@@ -6,13 +6,20 @@ class InterfaceExplorer:
         pass
 
     # ------------------------------------------------ exploring all network interfaces --------------------------------------------------------
-    # for "arg_type" use : 'all' or 'wireless'
+
     def explore(self,arg_type = 'all' ):
+        '''
+        :param arg_type: 'all' for all the information and 'filtered' only for needed information
+        :return: network_table providing all the information about the network interfaces
+        '''
         network_table = []
         interfaces = (netifaces.interfaces())
         for inter in interfaces :
-            interface =netifaces.ifaddresses( inter )
-            if arg_type == 'filtred':
+            try:
+                interface =netifaces.ifaddresses( inter )
+            except ValueError as e :
+                print('interface name: {} and error : {}'.format(inter,e))
+            if arg_type == 'filtered':
                 if 2 in interface.keys():
                     # the second field of the dictionnary contains the ip adress and the netmask
                     interface_info = interface[2][0]
@@ -29,17 +36,25 @@ class InterfaceExplorer:
 
     # ------------------------------------------------ display the table of the network interfaces --------------------------------------------------------
     def display(self,arg_table):
+        '''
+        :param arg_table: display the network table
+        :return: None
+        '''
         for el in arg_table:
             print (el)
 
     # ------------------------------------------------ check if an interface exist based on it's ip adress --------------------------------------------------------
     def find_by_ip(self,arg_ip):
-        wireless_interfaces = self.explore('filtred')
+        '''
+        :param arg_ip: ip adress to look for
+        :return:
+        '''
+        wireless_interfaces = self.explore('filtered')
         exist = False
         for field in wireless_interfaces:
             if field ['addr'] == arg_ip:
                 exist = True
-                return field
+                return exist
         if exist == False:
             return exist
 

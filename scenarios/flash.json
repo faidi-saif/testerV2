@@ -8,7 +8,8 @@
         {
           "frw_type":"spherical",
           "mode"    :"make"
-        }
+        },
+        "logs" : "~/Desktop/test_logs/flash"
       },
 
       {

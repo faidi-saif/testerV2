@@ -7,7 +7,7 @@ class Camera :
 
 
 
-    def __init__(self,username,host_ip,ssh_passwd,web_port,arduino_port,linux_port,rtos_port,grid):
+    def __init__(self,username,host_ip,ssh_passwd,web_port,arduino_port,linux_port,rtos_port,grid,control_mode):
         '''
 
         :param username:
@@ -28,7 +28,7 @@ class Camera :
         self.web_port           = web_port
         self.grid               = grid
         self.grid.target_ip     = self.host_ip # target ip for the grid is the host ip for the camera
-        self.netwk_manager      = NetworkManager(username =self.username ,host = self.host_ip,ssh_passwd = self.ssh_passwd,arduino_port=self.arduino_port,linux_port=self.linux_port,rtos_port=self.rtos_port)
+        self.netwk_manager      = NetworkManager(username =self.username ,host = self.host_ip,ssh_passwd = self.ssh_passwd,arduino_port=self.arduino_port,linux_port=self.linux_port,rtos_port=self.rtos_port,control_mode=control_mode)
 
 
 
@@ -69,9 +69,9 @@ class Camera :
                 reset_flag = True
                 self.soft_reset()
             if time_elapsed >= arg_timeout:
-                raise Exception(' serial port is not ready , timeout ')
-                #return False
-        print('serial port is available')
+                #raise Exception(' serial port is not ready , timeout ')
+                return False
+        #print('serial port is available')
         return True
 
     def is_ssh_ready(self, arg_timeout):
@@ -94,9 +94,9 @@ class Camera :
                 reset_flag = True
                 self.soft_reset()
             if time_elapsed >= arg_timeout:
-                raise Exception('ssh is not ready , timeout ')
-                #return False
-        print('Connection established to ---> {}'.format(self.grid.host_ip),'time elapsed :',time_elapsed)
+                #raise Exception('ssh is not ready , timeout ')
+                return False
+        #print('Connection established to ---> {}'.format(self.grid.host_ip),'time elapsed :',time_elapsed)
         return True
 
     # ---------------------------------------------- ------------------------------------------
@@ -187,7 +187,7 @@ class Camera :
         :param arg_frw_type: firmware type must be spherical or Jbay , Jbay not implemented yet
         :return:
         '''
-        assert((arg_mode == 'arduino' or arg_mode == 'make') and arg_frw_type =='spherical'), 'invalid flash option , choose "arduino or "make" to set flash option'
+        assert((arg_mode == 'arduino' or arg_mode == 'make') and arg_frw_type == 'spherical'), 'invalid flash option , choose "arduino or "make" to set flash option'
         if arg_mode   == "arduino":
             self.netwk_manager.arduino_ser.fw_flash()
 
@@ -198,6 +198,8 @@ class Camera :
             #print('../../../../admin/host_tools/gen/remote_flash.sh {} {}'.format(cam_ip,binary_file))
             os.system('../../../../admin/host_tools/gen/remote_flash.sh {} {}'.format(cam_ip,binary_file))
             #/waf_build/spherical/build/eaglepeak/sd_fwupdate/DATA.bin
+            time.sleep(4)
+            self.soft_reset()
         else:
             pass
 
@@ -229,7 +231,10 @@ class Camera :
         :return: None
         '''
         self.netwk_manager.arduino_ser.reset()
-        self.is_ready('serial',arg_timeout=90)
+        if self.is_ready('serial',arg_timeout=90) :
+            pass
+        else :
+            raise Exception ('camera is not ready , timeout')
 
 
     # ---------------------------------------------- ------------------------------------------
@@ -241,7 +246,11 @@ class Camera :
         '''
         self.netwk_manager.arduino_ser.reboot()
         self.soft_reset()
-        self.is_ready('serial', arg_timeout=90)
+        if self.is_ready('serial', arg_timeout=90):
+            pass
+        else :
+            raise Exception ('camera is not ready , timeout')
+
 
 
 

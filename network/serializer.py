@@ -20,10 +20,22 @@ class Serializer:
 
     # ---------------------------------------- encode_data -----------------------------------------
     def encode_data(self,arg_data):
+        '''
+        :param arg_data:string to send
+        :return: encoded data
+        '''
         return str.encode(arg_data)
     # ---------------------------------------- sed data via serial port -----------------------------------------
 
     def send_data(self,arg_data):
+        '''
+        1-a short sleep to prevent multiple access on serial port
+        2-carriage return to data
+        3- wait for input/output buffers to be clean before sending data
+        4- write in the buffer of the serial instance
+        :param arg_data: data to be sent
+        :return: None
+        '''
         time.sleep(0.2)
         l_data = self.encode_data(arg_data + '\r\n')
         self.ser.flushInput()

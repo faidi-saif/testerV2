@@ -2,10 +2,11 @@ import json
 import os
 from logger import Logger
 import  check.checker as checker
-
+import datetime
 
 class ScenarioRunner :
 
+    # ---------------------------------------------- constructor ------------------------------------------
     def __init__(self,vcamera):
         self.vcamera            = vcamera
         self.description        = ''
@@ -21,7 +22,7 @@ class ScenarioRunner :
         self.results            = []
         self.logger             = Logger()
 
-    # ---------------------------------------------- ------------------------------------------
+    # ---------------------------------------------- load_json ------------------------------------------
     def load_json(self , arg_file):
         '''
         :param arg_file: json input file
@@ -31,7 +32,7 @@ class ScenarioRunner :
             sceanrio = json.load(f)
             return sceanrio
 
-    # ---------------------------------------------- ------------------------------------------
+    # ---------------------------------------------- check_format ------------------------------------------
     def check_format(self,arg_path):
         '''
         convert ~ into home directory and remove white spaces
@@ -43,7 +44,7 @@ class ScenarioRunner :
             path = os.environ['HOME'] + arg_path[1:]
         return path
 
-    # ---------------------------------------------- ------------------------------------------
+    # ---------------------------------------------- run_wlog ------------------------------------------
     def run_wlog(self,arg_step,function,*args):
         '''
 
@@ -69,7 +70,7 @@ class ScenarioRunner :
             function(*args)
 
 
-    # ---------------------------------------------- ------------------------------------------
+    # ---------------------------------------------- run ------------------------------------------
 
     def run(self,arg_step):
         '''
@@ -153,7 +154,7 @@ class ScenarioRunner :
 
 
 
-    # ---------------------------------------------- ------------------------------------------
+    # ----------------------------------------------check ------------------------------------------
 
     def check(self ,derived_checker,*args):
         '''
@@ -168,7 +169,7 @@ class ScenarioRunner :
         result = instance.check(*args)
         return result
 
-    # ---------------------------------------------- ------------------------------------------
+    # ---------------------------------------------- run_pre_step ------------------------------------------
     def run_pre_step(self,arg_step):
         '''
         performed before each step
@@ -177,7 +178,7 @@ class ScenarioRunner :
         '''
         pass
 
-    # ---------------------------------------------- ------------------------------------------
+    # ---------------------------------------------- run_post_step ------------------------------------------
     def run_post_step(self,arg_step):
         '''
         performed after each step
@@ -185,10 +186,10 @@ class ScenarioRunner :
         :return:
         '''
         # if firmware is not valid print results , reflash with valid firmware , exit
-        if (( arg_step['case'] == self.step_flash)): #and (self.vcamera.is_ready('ssh','serial',arg_timeout=90) == False )):
+        if (( arg_step['case'] == self.step_flash) and (self.vcamera.is_ready('ssh','serial',arg_timeout=90) == False )):
             print('invalid firmware ','{} -------> {}'.format(self.description,False))
             self.vcamera.flash('arduino',self.ref_frw_type)
-            if self.vcamera.is_ready('ssh','serial',arg_timeout=60):
+            if self.vcamera.is_ready('ssh','serial',arg_timeout=120):
                 print('a valid firmware is installed on the platform')
                 exit(1)
             else :
@@ -198,20 +199,26 @@ class ScenarioRunner :
 
 
     def before_test(self):
+        '''
+        cleanup the camera before starting the test
+        :return:None
+        '''
         print('*** cleanup camera ***')
         self.vcamera.cleanup()
 
-    # ---------------------------------------------- ------------------------------------------
-    def run_pre_scenario(self):
-        '''
-        performed before each scenario
-        :return:
-        '''
-        pass
+    # ----------------------------------------------run_pre_scenario  ------------------------------------------
+
+    def run_pre_scenario(self,with_unique_log_index):
+            now = datetime.datetime.now()
+            index = str(now.isoformat())
+            for step in self.steps :
+                if with_unique_log_index == True:
+                     self.add_log_unique_index(arg_step = step,index = index)
 
 
 
-    # ---------------------------------------------- ------------------------------------------
+
+    # ---------------------------------------------- run_post_scenario ------------------------------------------
     def run_post_scenario(self):
         '''
         performed after each scenario
@@ -220,8 +227,18 @@ class ScenarioRunner :
         # reinit virtual camera ( all the
         pass
 
-    # ---------------------------------------------- ------------------------------------------
-    def run_scenario(self,arg_scenario_file):
+    # ---------------------------------------------- add_log_unique_index ------------------------------------------
+    def add_log_unique_index(self,arg_step,index):
+        if 'logs' in arg_step.keys():
+            arg_step['logs'] = arg_step['logs'] + '_' + index
+        if  'out_directory' in arg_step['params'].keys():
+            arg_step['params']['out_directory'] =  arg_step['params']['out_directory'] + '_' + index
+
+
+
+
+    # ---------------------------------------------- run_scenario ------------------------------------------
+    def run_scenario(self,arg_scenario_file,with_unique_log_index = None):
         '''
         :param arg_scenario_file: input file (scenario to be executed )
         :return: None
@@ -233,15 +250,19 @@ class ScenarioRunner :
            test cases
         6- run post scenario actions
         '''
-        #self.run_pre_scenario()
 
         scenario = self.load_json(arg_scenario_file)
         self.description = scenario['description']
         self.steps       = scenario['steps']
+
+        self.run_pre_scenario(with_unique_log_index=with_unique_log_index)
+
         print("[--------------------------------------------- start running sceanrio : {} --------------------------------]".format(self.description))
 
         for step in self.steps :
             #print(" case --------------------------------> " + step['case'])
+            # add unique index for logs directories
+
 
             self.run_pre_step(step)
 
@@ -256,7 +277,13 @@ class ScenarioRunner :
 
         self.run_post_scenario()
 
+    # ---------------------------------------------- run_scenario ------------------------------------------
     def get_test_result(self,result_path):
+        '''
+        store test results in a  json file at 'result_path'
+        :param result_path: path to store test results
+        :return: None
+        '''
         result_path = self.check_format(result_path) # get the equivalent to ~/ in path
         for el in self.results  :
             print(json.dumps(el,indent = 4))
@@ -274,5 +301,4 @@ class ScenarioRunner :
 # s = ScenarioRunner('camera')
 # s.run_scenario('./scenarios/scenario1.json')
 ##if self.vcamera.camera.is_serial_ready(arg_timeout=30):
-
 
